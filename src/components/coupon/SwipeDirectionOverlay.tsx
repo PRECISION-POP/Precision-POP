@@ -5,6 +5,8 @@ import { MotionValue } from "framer-motion";
 interface SwipeDirectionOverlayProps {
   bgOpacityLeft: MotionValue<number>;
   bgOpacityRight: MotionValue<number>;
+  stampScaleLeft?: MotionValue<number>;
+  stampScaleRight?: MotionValue<number>;
   isPersonalized?: boolean;
   isAiGenerated?: boolean;
 }
@@ -12,6 +14,8 @@ interface SwipeDirectionOverlayProps {
 const SwipeDirectionOverlay = ({ 
   bgOpacityLeft, 
   bgOpacityRight, 
+  stampScaleLeft,
+  stampScaleRight,
   isPersonalized,
   isAiGenerated
 }: SwipeDirectionOverlayProps) => {
@@ -28,10 +32,10 @@ const SwipeDirectionOverlay = ({
         }}
       />
       
-      {/* Left "NOPE" stamp - appears when swiping left */}
+      {/* Left "NOPE" stamp — fades in AND grows with drag commitment */}
       <motion.div
-        className="absolute top-1/3 left-8 transform -rotate-12"
-        style={{ opacity: bgOpacityLeft }}
+        className="absolute top-1/3 left-8 -rotate-12"
+        style={{ opacity: bgOpacityLeft, scale: stampScaleLeft ?? 1 }}
       >
         <span className="text-5xl font-black text-red-500 
                          border-4 border-red-500 px-4 py-2 rounded-lg
@@ -49,10 +53,10 @@ const SwipeDirectionOverlay = ({
         }}
       />
       
-      {/* Right "SAVE" stamp - appears when swiping right */}
+      {/* Right "SAVE" stamp — fades in AND grows with drag commitment */}
       <motion.div
-        className="absolute top-1/3 right-8 transform rotate-12"
-        style={{ opacity: bgOpacityRight }}
+        className="absolute top-1/3 right-8 rotate-12"
+        style={{ opacity: bgOpacityRight, scale: stampScaleRight ?? 1 }}
       >
         <span className="text-5xl font-black text-green-500 
                          border-4 border-green-500 px-4 py-2 rounded-lg

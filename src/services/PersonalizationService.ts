@@ -313,7 +313,7 @@ class PersonalizationService {
   // Helper to get expiration date - always set to end of today
   private getExpirationDate(hoursFromNow: number): string {
     const date = new Date();
-    date.setHours(23, 59, 59, 999); // Set to end of today
+    date.setTime(date.getTime() + hoursFromNow * 60 * 60 * 1000);
     return date.toISOString();
   }
   

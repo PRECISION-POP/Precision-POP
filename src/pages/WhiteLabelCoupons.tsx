@@ -131,7 +131,10 @@ const Coupons = () => {
         </TabsList>
         
         <TabsContent value="discover" className="mt-0 pt-0">
-          <CouponSwiper onCouponSwiped={handleCouponSwiped} />
+          <CouponSwiper
+            onCouponSwiped={handleCouponSwiped}
+            onViewSaved={() => setActiveTab("saved")}
+          />
         </TabsContent>
         
         <TabsContent value="browse" className="mt-0">

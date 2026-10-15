@@ -43,6 +43,30 @@ const GroceryAdmin = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  // ---- admin gate: PIN from env, session-persisted unlock, fail-closed ----
+  const [pinInput, setPinInput] = useState("");
+  const [unlocked, setUnlocked] = useState<boolean>(() => {
+    try {
+      return sessionStorage.getItem("ppop_admin_unlocked") === "1";
+    } catch {
+      return false;
+    }
+  });
+  const adminPin = import.meta.env.VITE_ADMIN_PIN as string | undefined;
+
+  const tryUnlock = () => {
+    if (adminPin && pinInput === adminPin) {
+      setUnlocked(true);
+      try {
+        sessionStorage.setItem("ppop_admin_unlocked", "1");
+      } catch {
+        /* ignore */
+      }
+    } else {
+      toast.error("Incorrect PIN");
+    }
+    setPinInput("");
+  };
   const [newBrand, setNewBrand] = useState<Omit<Retailer, "id">>({
     retailer_id: "",
     name: "",
@@ -297,6 +321,39 @@ const GroceryAdmin = () => {
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin text-white mx-auto mb-4" />
           <p className="text-white text-xl">Loading grocery brands...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Fail-closed admin gate: no PIN configured => no access. Set VITE_ADMIN_PIN
+  // at build time (Cloudflare Workers Builds env var) to enable for demos.
+  if (!unlocked) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-8">
+        <div className="max-w-sm w-full text-center">
+          <h1 className="text-2xl font-bold text-white mb-2">Restricted area</h1>
+          <p className="text-gray-400 text-sm mb-6">
+            {adminPin
+              ? "Enter the admin PIN to manage grocery brands."
+              : "Admin access is not configured for this deployment."}
+          </p>
+          {adminPin && (
+            <div className="flex gap-2">
+              <Input
+                type="password"
+                inputMode="numeric"
+                placeholder="Admin PIN"
+                value={pinInput}
+                onChange={(e) => setPinInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && tryUnlock()}
+                className="bg-gray-800 border-gray-700 text-white"
+              />
+              <Button onClick={tryUnlock} className="bg-green-600 hover:bg-green-700">
+                Unlock
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     );

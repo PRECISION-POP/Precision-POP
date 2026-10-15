@@ -133,7 +133,10 @@ class AnalyticsService {
 
   private async insertEvent(event: SwipeEvent): Promise<boolean> {
     try {
-      const { error } = await supabase.from("swipe_events").insert(event);
+      // swipe_events is added by migration and is not in the generated
+      // Supabase types yet, hence the cast.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (supabase as any).from("swipe_events").insert(event);
       if (error) {
         // Table may not exist yet (migration not applied) — fall back quietly.
         console.warn("swipe_events insert failed, queuing locally:", error.message);
@@ -173,7 +176,8 @@ class AnalyticsService {
     }
     if (q.length === 0) return;
     try {
-      const { error } = await supabase.from("swipe_events").insert(q);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (supabase as any).from("swipe_events").insert(q);
       if (!error) localStorage.setItem(QUEUE_KEY, "[]");
     } catch {
       /* try again later */

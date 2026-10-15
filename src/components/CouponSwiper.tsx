@@ -118,8 +118,8 @@ const CouponSwiper = ({ onCouponSwiped, userId, onViewSaved }: ExtendedSwiperPro
             expiresAt: c.expiration || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
             category: c.category,
             brand: c.brand,
-            brandId: c.brand_id,
-            campaignId: c.campaign_id,
+            brandId: (c as unknown as { brand_id?: string }).brand_id,
+            campaignId: (c as unknown as { campaign_id?: string }).campaign_id,
           }));
           // Merge: live offers first, keep any fallback not duplicated
           setDeck((prev) => {
